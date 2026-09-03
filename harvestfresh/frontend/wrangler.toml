@@ -1,0 +1,5 @@
+name = "harvestfresh-frontend"
+compatibility_date = "2026-09-03"
+
+[assets]
+directory = "./dist"
