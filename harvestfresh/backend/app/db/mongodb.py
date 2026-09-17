@@ -11,7 +11,9 @@ db = Database()
 async def connect_to_mongo():
     db.client = AsyncIOMotorClient(
         settings.MONGODB_URL,
-        tlsCAFile=certifi.where()
+        tls=True,
+        tlsCAFile=certifi.where(),
+        tlsAllowInvalidCertificates=True
     )
     database = db.client[settings.DATABASE_NAME]
     
