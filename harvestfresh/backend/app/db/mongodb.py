@@ -1,3 +1,4 @@
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from app.core.config import settings
@@ -8,7 +9,10 @@ class Database:
 db = Database()
 
 async def connect_to_mongo():
-    db.client = AsyncIOMotorClient(settings.MONGODB_URL)
+    db.client = AsyncIOMotorClient(
+        settings.MONGODB_URL,
+        tlsCAFile=certifi.where()
+    )
     database = db.client[settings.DATABASE_NAME]
     
     # Import document models
