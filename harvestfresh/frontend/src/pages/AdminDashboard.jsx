@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 export const AdminDashboard = () => {
@@ -31,13 +32,13 @@ export const AdminDashboard = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-jakarta">
       <div>
-        <h2 className="font-hanken font-extrabold text-3xl text-primary">Operations & Sales Analytics</h2>
-        <p className="font-jakarta text-xs text-on-surface-variant mt-1">Live metrics from MongoDB produce pipeline</p>
+        <h2 className="font-hanken font-extrabold text-3xl text-primary">Operations & Sales Command Center</h2>
+        <p className="font-jakarta text-xs text-on-surface-variant mt-1">Live metrics from HarvestFresh online shopping & delivery platform</p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Primary KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-secondary/20 shadow-sm space-y-2">
           <div className="flex items-center justify-between text-secondary">
@@ -58,12 +59,12 @@ export const AdminDashboard = () => {
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-secondary/20 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-primary">
-            <span className="material-symbols-outlined text-3xl">card_membership</span>
-            <span className="text-[11px] font-bold uppercase bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full">Active</span>
+          <div className="flex items-center justify-between text-amber-600">
+            <span className="material-symbols-outlined text-3xl">person_check</span>
+            <span className="text-[11px] font-bold uppercase bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">Approvals</span>
           </div>
-          <span className="font-hanken font-extrabold text-3xl text-primary block">{stats.active_subscriptions}</span>
-          <span className="font-jakarta text-xs text-on-surface-variant font-semibold">Active Monthly Passes</span>
+          <span className="font-hanken font-extrabold text-3xl text-amber-600 block">{stats.pending_approvals}</span>
+          <span className="font-jakarta text-xs text-on-surface-variant font-semibold">Pending Customer Approvals</span>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-secondary/20 shadow-sm space-y-2">
@@ -73,6 +74,52 @@ export const AdminDashboard = () => {
           </div>
           <span className="font-hanken font-extrabold text-3xl text-red-600 block">{stats.low_stock_products}</span>
           <span className="font-jakarta text-xs text-on-surface-variant font-semibold">Low Stock Products (&le;20)</span>
+        </div>
+      </div>
+
+      {/* Quick Action Navigation Grid */}
+      <div>
+        <h3 className="font-hanken font-bold text-xl text-primary mb-4">Operational Shortcut Modules</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Link to="/admin/sales" className="bg-white p-6 rounded-2xl border border-outline-variant/40 hover:border-emerald-500 hover:shadow-md transition-all space-y-3 group">
+            <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">campaign</span>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <h4 className="font-hanken font-bold text-base text-primary">Announce Sales & Banners</h4>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{stats.active_announcements} Active</span>
+              </div>
+              <p className="text-xs text-on-surface-variant mt-1">Broadcast promotional sales, promo codes, and delivery announcements live to customers.</p>
+            </div>
+          </Link>
+
+          <Link to="/admin/customers" className="bg-white p-6 rounded-2xl border border-outline-variant/40 hover:border-emerald-500 hover:shadow-md transition-all space-y-3 group">
+            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">person_check</span>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <h4 className="font-hanken font-bold text-base text-primary">Customer Approvals</h4>
+                {stats.pending_approvals > 0 && (
+                  <span className="bg-amber-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full animate-bounce">
+                    {stats.pending_approvals} Action Needed
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-on-surface-variant mt-1">Review new customer signups, approve B2B accounts, and manage user privileges.</p>
+            </div>
+          </Link>
+
+          <Link to="/admin/products" className="bg-white p-6 rounded-2xl border border-outline-variant/40 hover:border-emerald-500 hover:shadow-md transition-all space-y-3 group">
+            <div className="w-12 h-12 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-2xl">inventory_2</span>
+            </div>
+            <div>
+              <h4 className="font-hanken font-bold text-base text-primary">Products & Inventory</h4>
+              <p className="text-xs text-on-surface-variant mt-1">Add organic produce, set sale discounts, restock stock levels, and assign organic tags.</p>
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -110,7 +157,7 @@ export const AdminDashboard = () => {
                 alert("Error triggering subscription runner");
               }
             }}
-            className="bg-emerald-400 text-primary font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-300 transition-colors"
+            className="bg-emerald-400 text-primary font-bold text-xs px-4 py-2.5 rounded-xl hover:bg-emerald-300 transition-colors shadow-md"
           >
             Trigger Subscription Order Generation
           </button>

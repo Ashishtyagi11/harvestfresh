@@ -20,14 +20,14 @@ async def connect_to_mongo():
     # Import document models
     from app.models.models import (
         User, OTPSession, Category, Product, Cart, Order,
-        SubscriptionPlan, Subscription, DeliveryZone, Payment
+        SubscriptionPlan, Subscription, DeliveryZone, Payment, Announcement
     )
     
     await init_beanie(
         database=database,
         document_models=[
             User, OTPSession, Category, Product, Cart, Order,
-            SubscriptionPlan, Subscription, DeliveryZone, Payment
+            SubscriptionPlan, Subscription, DeliveryZone, Payment, Announcement
         ]
     )
     print(f"Connected to MongoDB database: {settings.DATABASE_NAME}")

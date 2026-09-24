@@ -58,6 +58,8 @@ class ProductCreate(BaseModel):
     category_id: Optional[str] = None
     description: str
     price: float
+    original_price: Optional[float] = None
+    is_on_sale: bool = False
     unit: str = "500g"
     stock_qty: int = 100
     organic_certified: bool = True
@@ -75,6 +77,8 @@ class ProductResponse(BaseModel):
     category_name: Optional[str] = None
     description: str
     price: float
+    original_price: Optional[float] = None
+    is_on_sale: bool = False
     unit: str
     stock_qty: int
     organic_certified: bool
@@ -168,6 +172,36 @@ class SubscriptionResponse(BaseModel):
     start_date: datetime
     paused_until: Optional[datetime] = None
 
+# Announcement Schemas
+class AnnouncementCreate(BaseModel):
+    title: str
+    message: str
+    promo_code: Optional[str] = None
+    discount_percentage: Optional[float] = None
+    banner_type: str = "sale"  # "sale" | "flash_deal" | "delivery_alert" | "harvest_special"
+    target_page: str = "all"
+    is_active: bool = True
+    bg_gradient: str = "from-emerald-700 via-teal-800 to-emerald-900"
+
+class AnnouncementResponse(BaseModel):
+    id: str
+    title: str
+    message: str
+    promo_code: Optional[str] = None
+    discount_percentage: Optional[float] = None
+    banner_type: str
+    target_page: str
+    is_active: bool
+    bg_gradient: str
+    created_at: datetime
+
+# Customer Approval Schemas
+class CustomerStatusUpdate(BaseModel):
+    approval_status: Optional[str] = None  # "pending" | "approved" | "rejected"
+    is_active: Optional[bool] = None
+    account_type: Optional[str] = None    # "retail" | "wholesale" | "vip"
+    role: Optional[str] = None            # "customer" | "admin"
+
 # Admin Stats Schema
 class AdminStatsResponse(BaseModel):
     orders_today: int
@@ -177,3 +211,5 @@ class AdminStatsResponse(BaseModel):
     active_subscriptions: int
     low_stock_products: int
     total_users: int
+    pending_approvals: int = 0
+    active_announcements: int = 0

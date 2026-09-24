@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { Toast } from '../components/Toast';
+import api from '../services/api';
 
 export const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useStore((state) => state.user);
   const logout = useStore((state) => state.logout);
+  const [pendingApprovals, setPendingApprovals] = useState(0);
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      api.get('/admin/stats')
+        .then(res => setPendingApprovals(res.data.pending_approvals || 0))
+        .catch(() => {});
+    }
+  }, [user, location.pathname]);
 
   if (!user || user.role !== 'admin') {
     return (
@@ -16,11 +26,11 @@ export const AdminLayout = () => {
           <span className="material-symbols-outlined text-5xl text-error mb-2">gpp_maybe</span>
           <h2 className="font-hanken font-bold text-2xl text-primary">Admin Access Required</h2>
           <p className="font-jakarta text-sm text-on-surface-variant my-4">
-            You must be logged in as an administrator (e.g., phone ends in 9999 or phone is 9999999999) to access the HarvestFresh Admin Console.
+            You must be logged in as an administrator (e.g., phone ends in 9999 or is 9999999999) to access the HarvestFresh Admin Operations Console.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-container"
+            className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-container shadow-md"
           >
             Log In as Admin
           </button>
@@ -32,7 +42,10 @@ export const AdminLayout = () => {
   const navItems = [
     { label: 'Overview Analytics', path: '/admin', icon: 'dashboard' },
     { label: 'Products & Inventory', path: '/admin/products', icon: 'inventory_2' },
+    { label: 'Announce Sales & Banners', path: '/admin/sales', icon: 'campaign' },
+    { label: 'Customer Approvals', path: '/admin/customers', icon: 'person_check', badge: pendingApprovals },
     { label: 'Customer Orders', path: '/admin/orders', icon: 'local_shipping' },
+    { label: 'Delivery Coverage', path: '/admin/delivery-zones', icon: 'map' },
     { label: 'Subscriptions Oversight', path: '/admin/subscriptions', icon: 'card_membership' }
   ];
 
@@ -46,7 +59,10 @@ export const AdminLayout = () => {
               <div className="w-8 h-8 rounded-lg bg-emerald-400 text-primary flex items-center justify-center font-bold">
                 <span className="material-symbols-outlined text-xl">eco</span>
               </div>
-              <span className="font-hanken font-bold text-lg">Terra Admin</span>
+              <div>
+                <span className="font-hanken font-bold text-lg block leading-tight">Terra Admin</span>
+                <span className="text-[10px] text-emerald-300 font-semibold">Storefront Management</span>
+              </div>
             </Link>
           </div>
 
@@ -57,10 +73,21 @@ export const AdminLayout = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-colors ${active ? 'bg-primary-container text-emerald-300' : 'text-on-primary-container hover:bg-primary-container/50 hover:text-white'}`}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                    active 
+                      ? 'bg-primary-container text-emerald-300 shadow-sm' 
+                      : 'text-on-primary-container hover:bg-primary-container/50 hover:text-white'
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-lg">{item.icon}</span>
-                  <span>{item.label}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge > 0 && (
+                    <span className="bg-amber-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full animate-bounce">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -91,7 +118,10 @@ export const AdminLayout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="h-16 bg-white border-b border-outline-variant/30 px-8 flex items-center justify-between">
-          <h1 className="font-hanken font-bold text-xl text-primary">HarvestFresh Operations Console</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="font-hanken font-bold text-xl text-primary">HarvestFresh Operations Console</h1>
+            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">Live Operational Mode</span>
+          </div>
           <Link to="/" className="text-xs font-bold text-secondary hover:text-primary flex items-center gap-1">
             <span className="material-symbols-outlined text-sm">open_in_new</span>
             Back to Customer Store

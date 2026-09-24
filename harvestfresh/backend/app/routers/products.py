@@ -27,7 +27,8 @@ async def list_products(
     search: Optional[str] = Query(None, description="Search query"),
     organic: Optional[bool] = Query(None, description="Filter organic certified"),
     seasonal: Optional[bool] = Query(None, description="Filter seasonal items"),
-    limit: int = Query(50, ge=1, le=100),
+    on_sale: Optional[bool] = Query(None, description="Filter on sale items"),
+    limit: int = Query(100, ge=1, le=200),
     skip: int = Query(0, ge=0)
 ):
     query_conditions = [Product.is_active == True]
@@ -42,6 +43,9 @@ async def list_products(
         
     if seasonal is not None:
         query_conditions.append(Product.seasonal == seasonal)
+        
+    if on_sale is not None:
+        query_conditions.append(Product.is_on_sale == on_sale)
         
     products = await Product.find(*query_conditions).skip(skip).limit(limit).to_list()
     
@@ -61,6 +65,8 @@ async def list_products(
             category_name=cat_dict.get(p.category_id, "Fresh Produce"),
             description=p.description,
             price=p.price,
+            original_price=getattr(p, "original_price", None),
+            is_on_sale=getattr(p, "is_on_sale", False),
             unit=p.unit,
             stock_qty=p.stock_qty,
             organic_certified=p.organic_certified,
@@ -94,6 +100,8 @@ async def get_product_by_slug(slug: str):
         category_name=cat_name,
         description=product.description,
         price=product.price,
+        original_price=getattr(product, "original_price", None),
+        is_on_sale=getattr(product, "is_on_sale", False),
         unit=product.unit,
         stock_qty=product.stock_qty,
         organic_certified=product.organic_certified,
@@ -119,6 +127,8 @@ async def create_product(payload: ProductCreate, admin: User = Depends(get_curre
         category_id=cat_id,
         description=payload.description,
         price=payload.price,
+        original_price=payload.original_price,
+        is_on_sale=payload.is_on_sale,
         unit=payload.unit,
         stock_qty=payload.stock_qty,
         organic_certified=payload.organic_certified,
@@ -138,6 +148,8 @@ async def create_product(payload: ProductCreate, admin: User = Depends(get_curre
         category_name="Fresh Produce",
         description=product.description,
         price=product.price,
+        original_price=product.original_price,
+        is_on_sale=product.is_on_sale,
         unit=product.unit,
         stock_qty=product.stock_qty,
         organic_certified=product.organic_certified,
@@ -159,6 +171,8 @@ async def update_product(product_id: str, payload: ProductCreate, admin: User = 
     product.name = payload.name
     product.description = payload.description
     product.price = payload.price
+    product.original_price = payload.original_price
+    product.is_on_sale = payload.is_on_sale
     product.unit = payload.unit
     product.stock_qty = payload.stock_qty
     product.organic_certified = payload.organic_certified
@@ -179,6 +193,8 @@ async def update_product(product_id: str, payload: ProductCreate, admin: User = 
         category_name="Fresh Produce",
         description=product.description,
         price=product.price,
+        original_price=product.original_price,
+        is_on_sale=product.is_on_sale,
         unit=product.unit,
         stock_qty=product.stock_qty,
         organic_certified=product.organic_certified,
@@ -190,6 +206,15 @@ async def update_product(product_id: str, payload: ProductCreate, admin: User = 
         is_active=product.is_active,
         freshness_percentage=calculate_freshness(product.harvested_on)
     )
+
+@router.patch("/{product_id}/stock", response_model=dict)
+async def update_stock(product_id: str, stock_qty: int = Query(..., ge=0), admin: User = Depends(get_current_admin)):
+    product = await Product.get(PydanticObjectId(product_id))
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    product.stock_qty = stock_qty
+    await product.save()
+    return {"message": f"Stock for {product.name} updated to {stock_qty}", "stock_qty": stock_qty}
 
 @router.delete("/{product_id}")
 async def delete_product(product_id: str, admin: User = Depends(get_current_admin)):

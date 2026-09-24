@@ -171,7 +171,7 @@ async def seed_database():
             await sp.insert()
         print("Seeded Subscription Plans.")
 
-    # 5. Seed Admin User
+    # 5. Seed Admin User & Sample Customers
     admin_phone = "9999999999"
     admin_user = await User.find_one(User.phone == admin_phone)
     if not admin_user:
@@ -180,9 +180,81 @@ async def seed_database():
             name="Terra Admin",
             email="admin@harvestfresh.com",
             role="admin",
+            approval_status="approved",
+            is_active=True,
+            account_type="vip",
             addresses=[
                 Address(label="Headquarters", line1="100 Feet Road, Indiranagar", pincode="560038", city="Bengaluru")
             ]
         )
         await admin_user.insert()
         print(f"Seeded Admin User: {admin_phone}")
+
+    # Seed sample customer accounts for approval workflow test
+    if await User.find(User.role == "customer").count() == 0:
+        sample_customers = [
+            {
+                "phone": "+919876543210",
+                "name": "Aarav Sharma",
+                "email": "aarav.sharma@example.com",
+                "role": "customer",
+                "approval_status": "pending",
+                "is_active": True,
+                "account_type": "retail",
+                "addresses": [Address(label="Home", line1="Flat 402, Green Glen Layout, Bellandur", pincode="560103", city="Bengaluru")]
+            },
+            {
+                "phone": "+919812345678",
+                "name": "Priya Nair",
+                "email": "priya.nair@example.com",
+                "role": "customer",
+                "approval_status": "pending",
+                "is_active": True,
+                "account_type": "wholesale",
+                "addresses": [Address(label="Store Front", line1="22 Main Road, Koramangala 4th Block", pincode="560034", city="Bengaluru")]
+            },
+            {
+                "phone": "+919988776655",
+                "name": "Rohan Deshmukh",
+                "email": "rohan.d@example.com",
+                "role": "customer",
+                "approval_status": "approved",
+                "is_active": True,
+                "account_type": "vip",
+                "addresses": [Address(label="Villa", line1="Palm Meadows, Whitefield", pincode="560066", city="Bengaluru")]
+            }
+        ]
+        for cdata in sample_customers:
+            cust = User(**cdata)
+            await cust.insert()
+        print("Seeded Sample Customers.")
+
+    # 6. Seed Announcements & Sales Banners
+    from app.models.models import Announcement
+    if await Announcement.find_all().count() == 0:
+        announcements_data = [
+            {
+                "title": "🎉 Weekend Organic Harvest Sale!",
+                "message": "Get FLAT 20% OFF on all freshly picked Heirloom Carrots and Baby Greens. Code: HARVEST20",
+                "promo_code": "HARVEST20",
+                "discount_percentage": 20.0,
+                "banner_type": "sale",
+                "target_page": "all",
+                "is_active": True,
+                "bg_gradient": "from-emerald-700 via-teal-800 to-emerald-900"
+            },
+            {
+                "title": "⚡ Express Morning Delivery Zone Expanded",
+                "message": "We now offer 45-minute farm-to-table express delivery in Whitefield and Indiranagar!",
+                "promo_code": "EXPRESSFREE",
+                "discount_percentage": 10.0,
+                "banner_type": "flash_deal",
+                "target_page": "all",
+                "is_active": True,
+                "bg_gradient": "from-amber-600 via-orange-600 to-red-700"
+            }
+        ]
+        for adata in announcements_data:
+            ann = Announcement(**adata)
+            await ann.insert()
+        print("Seeded Announcements.")

@@ -17,6 +17,9 @@ class User(Document):
     name: str = "Fresh Customer"
     email: Optional[str] = None
     role: str = "customer"  # "customer" | "admin"
+    approval_status: str = "approved"  # "pending" | "approved" | "rejected"
+    is_active: bool = True
+    account_type: str = "retail"  # "retail" | "wholesale" | "vip"
     addresses: List[Address] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -50,6 +53,8 @@ class Product(Document):
     category_id: Optional[Indexed(PydanticObjectId)] = None
     description: str
     price: float
+    original_price: Optional[float] = None
+    is_on_sale: bool = False
     unit: str = "500g"
     stock_qty: int = 100
     organic_certified: bool = True
@@ -63,6 +68,20 @@ class Product(Document):
 
     class Settings:
         name = "products"
+
+class Announcement(Document):
+    title: str
+    message: str
+    promo_code: Optional[str] = None
+    discount_percentage: Optional[float] = None
+    banner_type: str = "sale"  # "sale" | "flash_deal" | "delivery_alert" | "harvest_special"
+    target_page: str = "all"   # "all" | "shop" | "home"
+    is_active: bool = True
+    bg_gradient: str = "from-emerald-700 via-teal-800 to-emerald-900"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "announcements"
 
 class CartItem(BaseModel):
     product_id: PydanticObjectId

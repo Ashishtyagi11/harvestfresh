@@ -19,7 +19,10 @@ import { DeliveryCoverage } from './pages/DeliveryCoverage';
 
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminProducts } from './pages/AdminProducts';
+import { AdminSalesAnnouncements } from './pages/AdminSalesAnnouncements';
+import { AdminCustomers } from './pages/AdminCustomers';
 import { AdminOrders } from './pages/AdminOrders';
+import { AdminDeliveryZones } from './pages/AdminDeliveryZones';
 import { AdminSubscriptions } from './pages/AdminSubscriptions';
 
 export const App = () => {
@@ -51,11 +54,14 @@ export const App = () => {
           <Route path="delivery-coverage" element={<DeliveryCoverage />} />
         </Route>
 
-        {/* Admin Dashboard Protected Routes */}
+        {/* Admin Operations Protected Routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="sales" element={<AdminSalesAnnouncements />} />
+          <Route path="customers" element={<AdminCustomers />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="delivery-zones" element={<AdminDeliveryZones />} />
           <Route path="subscriptions" element={<AdminSubscriptions />} />
         </Route>
       </Routes>

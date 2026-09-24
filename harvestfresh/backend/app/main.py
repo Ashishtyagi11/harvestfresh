@@ -10,7 +10,7 @@ from app.tasks.scheduler import start_scheduler, shutdown_scheduler
 
 from app.routers import (
     auth, products, categories, cart, delivery_zones,
-    orders, subscriptions, payments, admin
+    orders, subscriptions, payments, admin, announcements
 )
 
 @asynccontextmanager
@@ -56,6 +56,7 @@ app.include_router(orders.router)
 app.include_router(subscriptions.router)
 app.include_router(payments.router)
 app.include_router(admin.router)
+app.include_router(announcements.router)
 
 @app.get("/")
 async def root():

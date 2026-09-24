@@ -118,6 +118,9 @@ async def get_me(user: User = Depends(get_current_user)):
         "name": user.name,
         "email": user.email,
         "role": user.role,
+        "approval_status": getattr(user, "approval_status", "approved"),
+        "is_active": getattr(user, "is_active", True),
+        "account_type": getattr(user, "account_type", "retail"),
         "addresses": [a.model_dump() for a in user.addresses]
     }
 
