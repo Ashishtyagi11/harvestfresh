@@ -105,6 +105,15 @@ export const Navbar = () => {
               </Link>
 
               {/* User Account / Auth Dropdown */}
+              <Link
+                to="/admin"
+                className="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+                title="Admin Operations Console"
+              >
+                <span className="material-symbols-outlined text-base">admin_panel_settings</span>
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+
               {user ? (
                 <div className="flex items-center gap-2">
                   <Link
@@ -114,16 +123,6 @@ export const Navbar = () => {
                     <span className="material-symbols-outlined text-base">account_circle</span>
                     <span className="max-w-[80px] truncate">{user.name.split(' ')[0]}</span>
                   </Link>
-
-                  {user.role === 'admin' && (
-                    <Link
-                      to="/admin"
-                      className="bg-amber-100 text-amber-900 hover:bg-amber-200 px-3 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1"
-                    >
-                      <span className="material-symbols-outlined text-base">admin_panel_settings</span>
-                      <span className="hidden md:inline">Admin</span>
-                    </Link>
-                  )}
                 </div>
               ) : (
                 <Link

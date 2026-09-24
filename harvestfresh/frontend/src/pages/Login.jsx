@@ -12,7 +12,7 @@ export const Login = () => {
   const setAuth = useStore((state) => state.setAuth);
   const showToast = useStore((state) => state.showToast);
 
-  const [step, setStep] = useState(1); // 1: Phone, 2: OTP, 3: Profile Name
+  const [step, setStep] = useState(1); // 1: Phone, 2: OTP
   const [phone, setPhone] = useState('9876543210');
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
@@ -62,7 +62,7 @@ export const Login = () => {
       });
 
       showToast(`Welcome back, ${res.data.name}!`, "success");
-      if (res.data.role === 'admin' && redirectPath === '/') {
+      if (res.data.role === 'admin' || redirectPath === '/admin') {
         navigate('/admin');
       } else {
         navigate(redirectPath);
@@ -74,15 +74,43 @@ export const Login = () => {
     }
   };
 
+  const handleInstantAdmin = async () => {
+    setLoading(true);
+    try {
+      const adminPhone = '9999999999';
+      const reqRes = await api.post('/auth/otp/request', { phone: adminPhone });
+      const code = reqRes.data.debug_otp || '123456';
+      const verifyRes = await api.post('/auth/otp/verify', {
+        phone: adminPhone,
+        otp: code,
+        name: 'Terra Admin'
+      });
+
+      setAuth(verifyRes.data.access_token, {
+        id: verifyRes.data.user_id,
+        phone: verifyRes.data.phone,
+        role: verifyRes.data.role,
+        name: verifyRes.data.name
+      });
+
+      showToast("Logged in as Admin!", "success");
+      navigate('/admin');
+    } catch (err) {
+      showToast("Admin login failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
+    <div className="min-h-[80vh] flex items-center justify-center p-4 font-jakarta">
       <div className="bg-white p-8 sm:p-10 rounded-3xl border border-secondary/20 shadow-xl max-w-md w-full relative">
         <div className="text-center space-y-2 mb-8">
           <div className="w-12 h-12 mx-auto rounded-2xl bg-primary text-emerald-400 flex items-center justify-center font-bold">
             <span className="material-symbols-outlined text-2xl">eco</span>
           </div>
           <h2 className="font-hanken font-extrabold text-2xl sm:text-3xl text-primary">
-            {step === 1 ? 'Login or Sign Up' : step === 2 ? 'Verify OTP Code' : 'Complete Your Profile'}
+            {step === 1 ? 'Login or Sign Up' : 'Verify OTP Code'}
           </h2>
           <p className="font-jakarta text-xs text-on-surface-variant">
             {step === 1
@@ -92,30 +120,43 @@ export const Login = () => {
         </div>
 
         {step === 1 && (
-          <form onSubmit={handleRequestOtp} className="space-y-5">
-            <div>
-              <label className="block text-xs font-bold text-primary mb-1.5">Mobile Phone Number</label>
-              <div className="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-xl px-3 py-3">
-                <span className="font-jakarta text-xs font-bold text-on-surface-variant border-r border-outline-variant pr-2.5">+91</span>
-                <input
-                  type="tel"
-                  maxLength={10}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  placeholder="Enter 10-digit mobile number"
-                  className="w-full bg-transparent font-jakarta text-sm font-semibold focus:outline-none"
-                  required
-                />
+          <div className="space-y-6">
+            <form onSubmit={handleRequestOtp} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-primary mb-1.5">Mobile Phone Number</label>
+                <div className="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-xl px-3 py-3">
+                  <span className="font-jakarta text-xs font-bold text-on-surface-variant border-r border-outline-variant pr-2.5">+91</span>
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 10-digit mobile number"
+                    className="w-full bg-transparent font-jakarta text-sm font-semibold focus:outline-none"
+                    required
+                  />
+                </div>
               </div>
-              <p className="text-[11px] text-on-surface-variant mt-1.5">
-                Tip: Enter <span className="font-bold text-primary">9999999999</span> for instant Admin login!
-              </p>
-            </div>
 
-            <Button type="submit" variant="primary" size="lg" fullWidth disabled={loading}>
-              {loading ? 'Sending Code...' : 'Get 6-Digit OTP'}
-            </Button>
-          </form>
+              <Button type="submit" variant="primary" size="lg" fullWidth disabled={loading}>
+                {loading ? 'Sending Code...' : 'Get 6-Digit OTP'}
+              </Button>
+            </form>
+
+            <div className="relative border-t border-outline-variant/30 pt-4 text-center">
+              <span className="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-3">
+                Quick Demo Access
+              </span>
+              <button
+                onClick={handleInstantAdmin}
+                disabled={loading}
+                className="w-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2 transition-all"
+              >
+                <span className="material-symbols-outlined text-amber-600 text-lg">admin_panel_settings</span>
+                ⚡ Instant Log In as Admin (Terra Admin)
+              </button>
+            </div>
+          </div>
         )}
 
         {step === 2 && (

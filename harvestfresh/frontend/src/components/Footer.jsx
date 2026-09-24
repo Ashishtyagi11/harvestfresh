@@ -37,6 +37,7 @@ export const Footer = () => {
               <li><Link to="/delivery-coverage" className="hover:text-white transition-colors">Delivery Zone Coverage</Link></li>
               <li><Link to="/cart" className="hover:text-white transition-colors">Your Cart & Checkout</Link></li>
               <li><Link to="/account" className="hover:text-white transition-colors">Customer Account Profile</Link></li>
+              <li><Link to="/admin" className="text-amber-300 font-bold hover:text-white transition-colors">⚡ Admin Operations Console</Link></li>
             </ul>
           </div>
 
