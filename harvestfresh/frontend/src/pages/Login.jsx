@@ -471,17 +471,6 @@ export const Login = () => {
             </button>
           </div>
         )}
-
-        {/* Separate Link to Admin Console */}
-        <div className="mt-8 pt-4 border-t border-outline-variant/30 text-center">
-          <Link
-            to="/admin/login"
-            className="text-xs font-bold text-slate-500 hover:text-emerald-700 flex items-center justify-center gap-1 transition-colors"
-          >
-            <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
-            Looking for Admin Portal? Go to /admin/login
-          </Link>
-        </div>
       </div>
     </div>
   );
