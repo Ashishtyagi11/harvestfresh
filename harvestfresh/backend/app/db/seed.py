@@ -172,6 +172,8 @@ async def seed_database():
         print("Seeded Subscription Plans.")
 
     # 5. Seed Admin User & Sample Customers
+    from app.core.security import hash_password
+
     admin_phone = "9999999999"
     admin_user = await User.find_one(User.phone == admin_phone)
     if not admin_user:
@@ -179,6 +181,7 @@ async def seed_database():
             phone=admin_phone,
             name="Terra Admin",
             email="admin@harvestfresh.com",
+            password_hash=hash_password("admin123"),
             role="admin",
             approval_status="approved",
             is_active=True,
@@ -189,6 +192,9 @@ async def seed_database():
         )
         await admin_user.insert()
         print(f"Seeded Admin User: {admin_phone}")
+    elif not admin_user.password_hash:
+        admin_user.password_hash = hash_password("admin123")
+        await admin_user.save()
 
     # Seed sample customer accounts for approval workflow test
     if await User.find(User.role == "customer").count() == 0:
@@ -197,6 +203,7 @@ async def seed_database():
                 "phone": "+919876543210",
                 "name": "Aarav Sharma",
                 "email": "aarav.sharma@example.com",
+                "password_hash": hash_password("customer123"),
                 "role": "customer",
                 "approval_status": "pending",
                 "is_active": True,
@@ -207,6 +214,7 @@ async def seed_database():
                 "phone": "+919812345678",
                 "name": "Priya Nair",
                 "email": "priya.nair@example.com",
+                "password_hash": hash_password("customer123"),
                 "role": "customer",
                 "approval_status": "pending",
                 "is_active": True,
@@ -217,6 +225,7 @@ async def seed_database():
                 "phone": "+919988776655",
                 "name": "Rohan Deshmukh",
                 "email": "rohan.d@example.com",
+                "password_hash": hash_password("customer123"),
                 "role": "customer",
                 "approval_status": "approved",
                 "is_active": True,

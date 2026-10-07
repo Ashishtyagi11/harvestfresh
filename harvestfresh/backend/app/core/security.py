@@ -1,5 +1,7 @@
 import hashlib
+import os
 import random
+import secrets
 from datetime import datetime, timedelta
 from typing import Optional, Any
 from jose import jwt, JWTError
@@ -34,3 +36,21 @@ def hash_otp(otp: str) -> str:
 
 def verify_otp_hash(otp: str, hashed_otp: str) -> bool:
     return hash_otp(otp) == hashed_otp
+
+def hash_password(password: str) -> str:
+    salt = os.urandom(16)
+    key = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
+    return salt.hex() + '$' + key.hex()
+
+def verify_password(plain_password: str, hashed_password: Optional[str]) -> bool:
+    if not hashed_password or '$' not in hashed_password:
+        return False
+    try:
+        salt_hex, key_hex = hashed_password.split('$', 1)
+        salt = bytes.fromhex(salt_hex)
+        key = bytes.fromhex(key_hex)
+        new_key = hashlib.pbkdf2_hmac('sha256', plain_password.encode('utf-8'), salt, 100000)
+        return secrets.compare_digest(new_key, key)
+    except Exception:
+        return False
+

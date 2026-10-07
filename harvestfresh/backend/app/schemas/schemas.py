@@ -17,11 +17,30 @@ class OTPVerify(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
 
+class UserRegisterRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    password: str
+    address_line1: str
+    city: str
+    pincode: str
+    address_label: Optional[str] = "Home"
+
+class UserLoginRequest(BaseModel):
+    identifier: str  # email or phone
+    password: str
+
+class AdminLoginRequest(BaseModel):
+    identifier: str  # email or phone
+    password: str
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user_id: str
     phone: str
+    email: Optional[str] = None
     role: str
     name: str
 

@@ -16,6 +16,7 @@ class User(Document):
     phone: Indexed(str, unique=True)
     name: str = "Fresh Customer"
     email: Optional[str] = None
+    password_hash: Optional[str] = None
     role: str = "customer"  # "customer" | "admin"
     approval_status: str = "approved"  # "pending" | "approved" | "rejected"
     is_active: bool = True

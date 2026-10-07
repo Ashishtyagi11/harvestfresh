@@ -106,7 +106,7 @@ export const Navbar = () => {
 
               {/* User Account / Auth Dropdown */}
               <Link
-                to="/admin"
+                to="/admin/login"
                 className="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
                 title="Admin Operations Console"
               >

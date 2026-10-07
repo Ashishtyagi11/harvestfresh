@@ -24,6 +24,7 @@ import { AdminCustomers } from './pages/AdminCustomers';
 import { AdminOrders } from './pages/AdminOrders';
 import { AdminDeliveryZones } from './pages/AdminDeliveryZones';
 import { AdminSubscriptions } from './pages/AdminSubscriptions';
+import { AdminLogin } from './pages/AdminLogin';
 
 export const App = () => {
   const fetchCart = useStore((state) => state.fetchCart);
@@ -53,6 +54,9 @@ export const App = () => {
           <Route path="subscription-management" element={<SubscriptionManagement />} />
           <Route path="delivery-coverage" element={<DeliveryCoverage />} />
         </Route>
+
+        {/* Standalone Admin Portal Auth URL */}
+        <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* Admin Operations Protected Routes */}
         <Route path="/admin" element={<AdminLayout />}>
